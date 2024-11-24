@@ -7,7 +7,6 @@ from llama_stack_client.lib.agents.event_logger import EventLogger
 from llama_stack_client.types import Attachment
 from llama_stack_client.types.agent_create_params import AgentConfig
 
-# Doesn't work - but will skip
 async def run_main():
     urls = ["chat.rst", "llama3.rst", "datasets.rst", "lora_finetune.rst"]
     attachments = [
@@ -24,6 +23,7 @@ async def run_main():
         model=os.environ["INFERENCE_MODEL"],
         instructions="You are a helpful assistant",
         tools=[{"type": "memory"}],  # enable Memory aka RAG
+        enable_session_persistence=False,
     )
 
     agent = Agent(client, agent_config)
@@ -45,7 +45,8 @@ async def run_main():
             attachments=attachments,
             session_id=session_id,
         )
-        async for log in EventLogger().log(response):
+
+        for log in EventLogger().log(response):
             log.print()
 
 
